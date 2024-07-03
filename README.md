@@ -42,4 +42,20 @@ PS command below to get a password for admin of Argo
  [System.Text.Encoding]::UTF8.GetString([System.Convert]::FromBase64String((kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}")))
 ```
 
+in separate cmd start port forwarding
+```
+kubectl port-forward svc/argocd-server -n argocd 8080:443  
+```
 
+then create a namespace and login to argo with admin login and password from PS commande above
+```
+kubectl create namespace bookapp
+
+argocd login localhost:8080 --username admin --password youwillneverguess 
+
+argocd app create guestbook --repo https://github.com/argoproj/argocd-example-apps.git --path guestbook --dest-server https://kubernetes.default.svc --dest-namespace bookapp  
+
+argocd app get guestbook
+
+argocd app sync guestbook
+```
